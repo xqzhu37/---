@@ -31,3 +31,28 @@ bsub -J count -n 10 -R span[hosts=1] -o %J.out -e %J.err -q normal "cellranger c
 bsub -J count -n 10 -R span[hosts=1] -o %J.out -e %J.err -q normal "cellranger count --id=T0_2 --sample=T0_2-1,T0_2-2,T0_2-3,T0_2-4,T0_2-5,T0_2-6,T0_2-7,T0_2-8,T0_2-9,T0_2-10,T0_2-11,T0_2-12  --transcriptome=/public/home/xqzhu/cellranger_reference/Ghirsutum  --fastqs=/data/cotton/Rawdata/Rawdata/T0_2"
 bsub -J count -n 10 -R span[hosts=1] -o %J.out -e %J.err -q normal "cellranger count --id=J0_2 --sample=J0_2-1,J0_2-2,J0_2-3,J0_2-4,J0_2-5,J0_2-6,J0_2-7,J0_2-8,J0_2-9,J0_2-10,J0_2-11,J0_2-12  --transcriptome=/public/home/xqzhu/cellranger_reference/Ghirsutum  --fastqs=/data/cotton/Rawdata/Rawdata/T6_2" 
 bsub -J count -n 10 -R span[hosts=1] -o %J.out -e %J.err -q normal "cellranger count --id=T0_1 --sample=T0_1-1,T0_1-2,T0_1-3,T0_1-4,T0_1-5,T0_1-6,T0_1-7,T0_1-8,T0_1-9,T0_1-10,T0_1-11,T0_1-12  --transcriptome=/public/home/xqzhu/cellranger_reference/Ghirsutum  --fastqs=/data/cotton/Rawdata/Rawdata/T0_1"
+关于aggr
+对cellranger count 产生的h5文件进行聚合
+首先创建CSV文件：
+library_id,molecule_h5
+J0_1,/public/home/xqzhu/J_0_4384/J_01/outs/molecule_info.h5
+J0_2,/public/home/xqzhu/cellranger4.0/J0_2/outs/molecule_info.h5
+如果是不同化学试剂，需要batch批次矫正：
+library_id,molecule_h5,batch
+J0_1,/public/home/xqzhu/J_0_4384/J_01/outs/molecule_info.h5,v2_lib
+J0_2,/public/home/xqzhu/cellranger4.0/J0_2/outs/molecule_info.h5,v3_lib
+命令行如下：
+#BSUB -J count
+#BSUB -n 10
+#BSUB -R span[hosts=1]
+#BSUB -o %J0_2.count.out
+#BSUB -e %J0_2.count.err
+#BSUB -q normal
+module load cellranger/4.0.0
+cellranger aggr --id=J0 \
+                  --csv=J0aggr.csv \
+                  --normalize=mapped
+参数设置：--id 运行结果文件夹名
+         --csv 创建的csv文件
+         ----normalize 可选，用于指定规范输入库的深度，mapped和none两种参数
+         
